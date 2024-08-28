@@ -10,4 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Infra\Postech.GroupEight.ContactIntegration.Infra.csproj" />
+  </ItemGroup>
 </Project>
