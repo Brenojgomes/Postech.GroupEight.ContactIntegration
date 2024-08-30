@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Application\Postech.GroupEight.ContactIntegration.Application.csproj" />
     <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Core\Postech.GroupEight.ContactIntegration.Core.csproj" />
   </ItemGroup>
 

@@ -19,16 +19,28 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
             return _database.GetCollection<Contact>(collectionName);
         }
 
+        public async Task<Contact> GetAsync(Guid id, string areaCode)
+        {
+            var collection = GetCollectionByAreaCode(areaCode);
+            return await collection.Find(c => c.Id == id).FirstOrDefaultAsync();
+        }
+
         public async Task CreateAsync(Contact contact)
         {
             var collection = GetCollectionByAreaCode(contact.AreaCode);
             await collection.InsertOneAsync(contact);
         }
 
-        public async Task<Contact> GetAsync(string areaCode, Guid id)
+        public async Task UpdateAsync(Contact contact)
+        {
+            var collection = GetCollectionByAreaCode(contact.AreaCode);
+            await collection.ReplaceOneAsync(c => c.Id == contact.Id, contact);            
+        }
+
+        public async Task DeleteAsync(Guid Id, string areaCode)
         {
             var collection = GetCollectionByAreaCode(areaCode);
-            return await collection.Find(c => c.Id == id).FirstOrDefaultAsync();
+            await collection.UpdateOneAsync(c => c.Id == Id, Builders<Contact>.Update.Set(c => c.Active, false));
         }
     }
 }

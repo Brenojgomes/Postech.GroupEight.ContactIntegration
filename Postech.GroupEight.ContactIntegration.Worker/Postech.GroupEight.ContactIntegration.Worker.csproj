@@ -8,10 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.2.5" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Application\Postech.GroupEight.ContactIntegration.Application.csproj" />
     <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Infra\Postech.GroupEight.ContactIntegration.Infra.csproj" />
   </ItemGroup>
 </Project>

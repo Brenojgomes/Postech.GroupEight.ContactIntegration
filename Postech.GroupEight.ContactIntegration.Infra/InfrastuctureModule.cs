@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Postech.GroupEight.ContactIntegration.Application.Services;
+using Postech.GroupEight.ContactIntegration.Application.Services.Interfaces;
 using Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories;
 using Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories;
 
@@ -48,6 +50,7 @@ namespace Postech.GroupEight.ContactIntegration.Infra
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddSingleton<IContactRepository, ContactRepository>();
+            services.AddSingleton<IContactService, ContactService>();
             return services;
         }   
     }

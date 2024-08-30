@@ -6,12 +6,10 @@ namespace Postech.GroupEight.ContactIntegration.Worker
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly IContactRepository _contactRepository;
 
-        public Worker(ILogger<Worker> logger, IContactRepository contactRepository)
+        public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
-            _contactRepository = contactRepository;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
