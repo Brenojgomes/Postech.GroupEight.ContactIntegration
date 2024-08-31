@@ -12,11 +12,16 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddMassTransit(x =>
         {
+            var configuration = context.Configuration;
             x.AddConsumer<ContactIntegrationConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", host => { });
+                cfg.Host(configuration.GetConnectionString("RabbitMq"), host => 
+                {
+                    host.Username(configuration.GetConnectionString("RabbitMqUser"));
+                    host.Password(configuration.GetConnectionString("RabbitMqPassword"));
+                });
 
                 cfg.ConfigureJsonSerializerOptions(options =>
                 {
@@ -32,8 +37,6 @@ var host = Host.CreateDefaultBuilder(args)
                 cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
             });
         });
-
-        services.AddMassTransitHostedService(true);
 
         services.AddHostedService<Worker>();
     })
