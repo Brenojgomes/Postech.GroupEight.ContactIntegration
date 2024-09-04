@@ -6,10 +6,12 @@ using Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories;
 
 namespace Postech.GroupEight.ContactIntegration.Application.Services
 {
+    /// <summary>
+    /// Service class for managing contacts.
+    /// </summary>
     public class ContactService : IContactService
     {
         private readonly IContactRepository _contactRepository;
-
         private readonly ILogger<ContactService> _logger;
 
         public ContactService(IContactRepository contactRepository, ILogger<ContactService> logger)
@@ -18,6 +20,11 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Creates a new contact.
+        /// </summary>
+        /// <param name="contact">The contact event.</param>
+        /// <returns>The ID of the created contact.</returns>
         public async Task<Guid> CreateContactHandlerAsync(ContactEvent contact)
         {
             if (contact is null) throw new ArgumentNullException(nameof(contact));
@@ -26,7 +33,7 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
 
             if (contactEntity is null)
             {
-                contactEntity = new Contact
+                contactEntity = new ContactEntity
                 {
                     Id = contact.Id,
                     CreatedAt = DateTime.UtcNow,
@@ -46,11 +53,13 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
                 _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} already exists");
             }
 
-
             return contactEntity.Id;
-
         }
 
+        /// <summary>
+        /// Updates an existing contact.
+        /// </summary>
+        /// <param name="contact">The contact event.</param>
         public async Task UpdateContactHandlerAsync(ContactEvent contact)
         {
             if (contact is null) throw new ArgumentNullException(nameof(contact));
@@ -72,6 +81,11 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
             _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} updated successfully");
         }
 
+        /// <summary>
+        /// Deletes a contact.
+        /// </summary>
+        /// <param name="id">The ID of the contact.</param>
+        /// <param name="areaCode">The area code of the contact.</param>
         public async Task DeleteContactHandlerAsync(Guid id, string areaCode)
         {
             var contactEntity = await _contactRepository.GetAsync(id, areaCode);

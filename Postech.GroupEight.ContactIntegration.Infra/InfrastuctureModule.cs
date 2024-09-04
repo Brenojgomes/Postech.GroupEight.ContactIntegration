@@ -6,18 +6,31 @@ using Postech.GroupEight.ContactIntegration.Application.Services;
 using Postech.GroupEight.ContactIntegration.Application.Services.Interfaces;
 using Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories;
 using Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.GroupEight.ContactIntegration.Infra
 {
+    /// <summary>
+    /// Provides extension methods to configure the infrastructure services.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class InfrastuctureModule
     {
+        /// <summary>
+        /// Adds the infrastructure services to the specified <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <returns>The modified <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
-        {     
+        {
             services.AddMongo();
             services.AddRepositories();
             return services;
         }
 
+        /// <summary>
+        /// Adds the MongoDB services to the specified <see cref="IServiceCollection"/>.
+        /// </summary>
         public static IServiceCollection AddMongo(this IServiceCollection services)
         {
             services.AddSingleton<MongoDbOptions>(sp =>
@@ -47,11 +60,14 @@ namespace Postech.GroupEight.ContactIntegration.Infra
             return services;
         }
 
+        /// <summary>
+        /// Adds the repository services.
+        /// </summary>
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddSingleton<IContactRepository, ContactRepository>();
             services.AddSingleton<IContactService, ContactService>();
             return services;
-        }   
+        }
     }
 }

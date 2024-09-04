@@ -5,6 +5,9 @@ using Postech.GroupEight.ContactIntegration.Core.Enumerators;
 
 namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
 {
+    /// <summary>
+    /// Represents a consumer for processing contact integration events.
+    /// </summary>
     public class ContactIntegrationConsumer : IConsumer<ContactEvent>
     {
         private readonly ILogger<ContactIntegrationConsumer> _logger;
@@ -16,6 +19,10 @@ namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
             _contactService = contactService;
         }
 
+        /// <summary>
+        /// Consumes the contact integration event.
+        /// </summary>
+        /// <param name="context">The consume context.</param>
         public Task Consume(ConsumeContext<ContactEvent> context)
         {
             Guid identifier = Guid.NewGuid();
