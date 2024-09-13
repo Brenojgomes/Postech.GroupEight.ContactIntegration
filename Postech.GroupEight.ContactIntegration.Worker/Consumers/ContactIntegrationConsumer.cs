@@ -1,7 +1,9 @@
 ﻿using MassTransit;
+using Polly.CircuitBreaker;
 using Postech.GroupEight.ContactIntegration.Application.Events;
 using Postech.GroupEight.ContactIntegration.Application.Services.Interfaces;
 using Postech.GroupEight.ContactIntegration.Core.Enumerators;
+using Postech.GroupEight.ContactIntegration.Worker.PolicyHandler;
 
 namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
 {
@@ -12,39 +14,50 @@ namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
     {
         private readonly ILogger<ContactIntegrationConsumer> _logger;
         private readonly IContactService _contactService;
+        private readonly AsyncCircuitBreakerPolicy _circuitBreakerPolicy;
 
         public ContactIntegrationConsumer(ILogger<ContactIntegrationConsumer> logger, IContactService contactService)
         {
             _logger = logger;
             _contactService = contactService;
+            _circuitBreakerPolicy = PolicyHandlerConfig.GetCircuitBreakerPolicy(logger);
         }
 
         /// <summary>
         /// Consumes the contact integration event.
         /// </summary>
         /// <param name="context">The consume context.</param>
-        public Task Consume(ConsumeContext<ContactEvent> context)
+        public async Task Consume(ConsumeContext<ContactEvent> context)
         {
-            Guid identifier = Guid.NewGuid();
-            _logger.LogInformation($"Received ContactIntegration message at: {DateTimeOffset.Now} | LogIdentifier: {identifier}");
-
-            switch (context.Message.EventType)
+            try
             {
-                case EventTypeEnum.Create:
-                    _logger.LogInformation($"Creating contact with Id: {context.Message.Id} | LogIdentifier: {identifier}");
-                    return _contactService.CreateContactHandlerAsync(context.Message);
-                case EventTypeEnum.Update:
-                    _logger.LogInformation($"Updating contact with Id: {context.Message.Id} | LogIdentifier: {identifier}");
-                    return _contactService.UpdateContactHandlerAsync(context.Message);
-                case EventTypeEnum.Delete:
-                    _logger.LogInformation($"Deleting contact with Id: {context.Message.Id} | LogIdentifier: {identifier}");
-                    return _contactService.DeleteContactHandlerAsync(context.Message.Id, context.Message.AreaCode);
-                default:
-                    _logger.LogInformation($"Invalid EventType: {context.Message.EventType} | LogIdentifier: {identifier}");
-                    break;
+                await _circuitBreakerPolicy.ExecuteAsync(async () =>
+                {
+                    switch (context.Message.EventType)
+                    {
+                        case EventTypeEnum.Create:
+                            _logger.LogInformation($"Contact created: {context.Message.Id}");
+                            await _contactService.CreateContactHandlerAsync(context.Message);
+                            break;
+                        case EventTypeEnum.Update:
+                            _logger.LogInformation($"Contact updated: {context.Message.Id}");
+                            await _contactService.UpdateContactHandlerAsync(context.Message);
+                            break;
+                        case EventTypeEnum.Delete:
+                            _logger.LogInformation($"Contact deleted: {context.Message.Id}");
+                            await _contactService.DeleteContactHandlerAsync(context.Message.Id, context.Message.AreaCode);
+                            break;
+                        default:
+                            _logger.LogInformation($"Invalid EventType: {context.Message.EventType}");
+                            break;
+                    }
+                });
             }
-
-            return Task.CompletedTask;
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error processing {context.Message.EventType} event for contact ID: {context.Message.Id}");
+                throw;
+            }
         }
     }
 }
