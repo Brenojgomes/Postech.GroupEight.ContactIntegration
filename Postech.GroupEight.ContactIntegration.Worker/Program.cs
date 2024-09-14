@@ -2,6 +2,7 @@ using MassTransit;
 using Postech.GroupEight.ContactIntegration.Infra;
 using Postech.GroupEight.ContactIntegration.Worker;
 using Postech.GroupEight.ContactIntegration.Worker.Consumers;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 var host = Host.CreateDefaultBuilder(args)
@@ -48,3 +49,9 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 await host.RunAsync();
+
+[ExcludeFromCodeCoverage]
+public partial class Program
+{
+    protected Program() { }
+}

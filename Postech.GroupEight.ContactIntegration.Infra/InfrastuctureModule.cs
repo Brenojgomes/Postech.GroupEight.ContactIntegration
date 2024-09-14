@@ -65,8 +65,8 @@ namespace Postech.GroupEight.ContactIntegration.Infra
         /// </summary>
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-            services.AddSingleton<IContactRepository, ContactRepository>();
-            services.AddSingleton<IContactService, ContactService>();
+            services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IContactService, ContactService>();
             return services;
         }
     }
