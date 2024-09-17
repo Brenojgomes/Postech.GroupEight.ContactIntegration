@@ -1,4 +1,4 @@
-﻿using Postech.GroupEight.ContactIntegration.Application.Events;
+﻿using Postech.GroupEight.TechChallenge.ContactManagement.Events;
 
 namespace Postech.GroupEight.ContactIntegration.Application.Services.Interfaces
 {

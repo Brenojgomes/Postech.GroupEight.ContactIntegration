@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Postech.GroupEight.ContactIntegration.Application.Events;
+using Postech.GroupEight.TechChallenge.ContactManagement.Events;
 using Postech.GroupEight.ContactIntegration.Application.Services.Interfaces;
 using Postech.GroupEight.ContactIntegration.Core.Entities;
 using Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories;

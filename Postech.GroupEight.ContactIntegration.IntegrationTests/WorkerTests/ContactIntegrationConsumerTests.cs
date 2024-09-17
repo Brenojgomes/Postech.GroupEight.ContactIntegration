@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using MongoDB.Driver;
-using Postech.GroupEight.ContactIntegration.Application.Events;
+using Postech.GroupEight.TechChallenge.ContactManagement.Events;
 using Postech.GroupEight.ContactIntegration.Core.Entities;
 using Postech.GroupEight.ContactIntegration.Core.Enumerators;
 using Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.Base;

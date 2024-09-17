@@ -1,6 +1,6 @@
 ﻿using Postech.GroupEight.ContactIntegration.Core.Enumerators;
 
-namespace Postech.GroupEight.ContactIntegration.Application.Events
+namespace Postech.GroupEight.TechChallenge.ContactManagement.Events
 {
     /// <summary>
     /// Represents a contact.

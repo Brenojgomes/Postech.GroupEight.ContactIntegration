@@ -2,7 +2,7 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Postech.GroupEight.ContactIntegration.Application.Events;
+using Postech.GroupEight.TechChallenge.ContactManagement.Events;
 using Postech.GroupEight.ContactIntegration.Application.Services.Interfaces;
 using Postech.GroupEight.ContactIntegration.Core.Enumerators;
 using Postech.GroupEight.ContactIntegration.Worker.Consumers;
