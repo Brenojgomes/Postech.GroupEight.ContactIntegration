@@ -1,7 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,27 +12,36 @@ using Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories;
 using Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories;
 using Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.Factories.Extensions;
 using Postech.GroupEight.ContactIntegration.Worker.Consumers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.Factories
 {
     [ExcludeFromCodeCoverage]
-    public class ContactIntegrationApplicationFactory(string rabbitMqConnectionString) : WebApplicationFactory<Program>, IDisposable
+    public class ContactIntegrationApplicationFactory : HostApplicationFactory<Program>, IDisposable
     {
-        private readonly string _rabbitMqConnectionString = rabbitMqConnectionString;
+        private readonly string _rabbitMqConnectionString;
         private IConfiguration? _configuration = null;
         private readonly MongoDbRunner _mongoRunner = MongoDbRunner.Start();
 
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        public ContactIntegrationApplicationFactory(string rabbitMqConnectionString)
+            : base(builder => ConfigureWebHost(builder, rabbitMqConnectionString))
+        {
+            _rabbitMqConnectionString = rabbitMqConnectionString;
+            _mongoRunner = MongoDbRunner.Start();
+        }
+
+        private static void ConfigureWebHost(IWebHostBuilder builder, string rabbitMqConnectionString)
         {
             builder.ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
                 configurationBuilder.AddJsonFile("appsettings.IntegrationTests.json");
-                _configuration = configurationBuilder.Build();
             });
 
-            builder.ConfigureServices(services =>
+            builder.ConfigureServices((context, services) =>
             {
+                var configuration = context.Configuration;
+
                 // Remove existing MassTransit services
                 List<ServiceDescriptor> massTransitServiceDescriptors = services.GetMassTransitServiceDescriptors();
                 foreach (ServiceDescriptor massTransitServiceDescriptor in massTransitServiceDescriptors)
@@ -48,7 +55,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.
                     m.AddConsumer<ContactIntegrationConsumer>();
                     m.UsingRabbitMq((context, cfg) =>
                     {
-                        cfg.Host(_rabbitMqConnectionString, h =>
+                        cfg.Host(rabbitMqConnectionString, h =>
                         {
                             h.Username("guest");
                             h.Password("guest");
@@ -62,8 +69,9 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.
                 });
 
                 // Configure MongoDB with Mongo2Go
-                var mongoDbConnectionString = _mongoRunner.ConnectionString;
-                var mongoDbDatabaseName = "ContactIntegrationTestDb";
+                var mongoRunner = MongoDbRunner.Start();
+                var mongoDbConnectionString = mongoRunner.ConnectionString;
+                var mongoDbDatabaseName = "contacts";
                 services.AddSingleton<IMongoClient, MongoClient>(sp =>
                 {
                     return new MongoClient(mongoDbConnectionString);
@@ -72,7 +80,13 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.
                 {
                     var client = sp.GetRequiredService<IMongoClient>();
                     var database = client.GetDatabase(mongoDbDatabaseName);
-                    return database.GetCollection<ContactEntity>("Contacts");
+                    return database;
+                });
+                services.AddSingleton(sp =>
+                {
+                    var client = sp.GetRequiredService<IMongoClient>();
+                    var database = client.GetDatabase(mongoDbDatabaseName);
+                    return database.GetCollection<ContactEntity>("contacts_31");
                 });
 
                 // Configure Repositories and Services
