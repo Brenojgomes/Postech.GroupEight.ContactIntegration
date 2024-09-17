@@ -23,12 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Application\Postech.GroupEight.ContactIntegration.Application.csproj" />
-    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Core\Postech.GroupEight.ContactIntegration.Core.csproj" />
-    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Infra\Postech.GroupEight.ContactIntegration.Infra.csproj" />
-    <ProjectReference Include="..\Postech.GroupEight.ContactIntegration.Worker\Postech.GroupEight.ContactIntegration.Worker.csproj" />
-	  
+    <ProjectReference Include="..\..\src\Postech.GroupEight.ContactIntegration.Application\Postech.GroupEight.ContactIntegration.Application.csproj" />
+    <ProjectReference Include="..\..\src\Postech.GroupEight.ContactIntegration.Worker\Postech.GroupEight.ContactIntegration.Worker.csproj" />
   </ItemGroup>
+
 
   <ItemGroup>
     <Using Include="Xunit" />
