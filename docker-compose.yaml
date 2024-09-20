@@ -55,6 +55,10 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
+networks:
+  app-network:
+    driver: bridge
+
 volumes:
   prometheus_data: {}
   grafana_data: {}
