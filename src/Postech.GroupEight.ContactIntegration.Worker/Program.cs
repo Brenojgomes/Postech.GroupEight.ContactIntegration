@@ -2,6 +2,7 @@ using MassTransit;
 using Postech.GroupEight.ContactIntegration.Infra;
 using Postech.GroupEight.ContactIntegration.Worker;
 using Postech.GroupEight.ContactIntegration.Worker.Consumers;
+using Prometheus;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
@@ -11,6 +12,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddInfrastructure();
         services.AddScoped<ContactIntegrationConsumer>();
 
+        // Configuração do MassTransit com RabbitMQ
         services.AddMassTransit(x =>
         {
             var configuration = context.Configuration;
@@ -18,7 +20,7 @@ var host = Host.CreateDefaultBuilder(args)
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(configuration.GetConnectionString("RabbitMq"), host => 
+                cfg.Host(configuration.GetConnectionString("RabbitMq"), host =>
                 {
                     host.Username(configuration.GetConnectionString("RabbitMqUser"));
                     host.Password(configuration.GetConnectionString("RabbitMqPassword"));
@@ -40,6 +42,10 @@ var host = Host.CreateDefaultBuilder(args)
         });
 
         services.AddHostedService<Worker>();
+
+        // Iniciar servidor de métricas do Prometheus
+        var metricsServer = new KestrelMetricServer(port: 5678); // Porta onde o Prometheus vai coletar as métricas
+        metricsServer.Start();
     })
     .ConfigureLogging(logging =>
     {

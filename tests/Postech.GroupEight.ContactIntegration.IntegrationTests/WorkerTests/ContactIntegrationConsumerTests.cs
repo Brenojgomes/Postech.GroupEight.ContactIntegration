@@ -40,7 +40,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
             // Act
             await _busControl.Publish(contactEvent);
 
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
             // Assert
             var contact = await _contactCollection.Find(c => c.Id == contactEvent.Id).FirstOrDefaultAsync();
