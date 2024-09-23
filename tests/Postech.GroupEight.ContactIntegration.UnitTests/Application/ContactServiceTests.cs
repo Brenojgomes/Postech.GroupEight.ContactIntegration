@@ -16,11 +16,11 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             var contactRepositoryMock = new Mock<IContactRepository>();
             var loggerMock = new Mock<ILogger<ContactService>>();
 
-            var contactEvent = new ContactEvent
+            var contactEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 AreaCode = "123",
-                Number = "4567890",
+                PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "john.doe@example.com",
@@ -57,11 +57,11 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             var contactRepositoryMock = new Mock<IContactRepository>();
             var loggerMock = new Mock<ILogger<ContactService>>();
 
-            var contactEvent = new ContactEvent
+            var contactEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 AreaCode = "123",
-                Number = "4567890",
+                PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "john.doe@example.com",
@@ -72,7 +72,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             {
                 Id = contactEvent.Id,
                 AreaCode = contactEvent.AreaCode,
-                Number = contactEvent.Number,
+                Number = contactEvent.PhoneNumber,
                 FirstName = contactEvent.FirstName,
                 LastName = contactEvent.LastName,
                 Email = contactEvent.Email,
@@ -109,11 +109,11 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             var contactRepositoryMock = new Mock<IContactRepository>();
             var loggerMock = new Mock<ILogger<ContactService>>();
 
-            var contactEvent = new ContactEvent
+            var contactEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 AreaCode = "123",
-                Number = "4567890",
+                PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "john.doe@example.com",
@@ -124,7 +124,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             {
                 Id = contactEvent.Id,
                 AreaCode = contactEvent.AreaCode,
-                Number = contactEvent.Number,
+                Number = contactEvent.PhoneNumber,
                 FirstName = contactEvent.FirstName,
                 LastName = contactEvent.LastName,
                 Email = contactEvent.Email,
@@ -172,11 +172,11 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             var contactRepositoryMock = new Mock<IContactRepository>();
             var loggerMock = new Mock<ILogger<ContactService>>();
 
-            var contactEvent = new ContactEvent
+            var contactEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 AreaCode = "123",
-                Number = "4567890",
+                PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "john.doe@example.com",

@@ -19,13 +19,13 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests
             var contactServiceMock = new Mock<IContactService>();
             var consumer = new ContactIntegrationConsumer(loggerMock.Object, contactServiceMock.Object);
 
-            var contextMock = new Mock<ConsumeContext<ContactEvent>>();
+            var contextMock = new Mock<ConsumeContext<ContactIntegrationModel>>();
             var faker = new Faker();
-            var message = new ContactEvent
+            var message = new ContactIntegrationModel
             {
                 Id = faker.Random.Guid(),
                 AreaCode = faker.Random.String(),
-                Number = faker.Random.String(),
+                PhoneNumber = faker.Random.String(),
                 FirstName = faker.Random.String(),
                 LastName = faker.Random.String(),
                 Email = faker.Internet.Email(),

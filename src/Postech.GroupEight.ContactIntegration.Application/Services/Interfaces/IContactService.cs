@@ -12,13 +12,13 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services.Interfaces
         /// </summary>
         /// <param name="contact">The contact event.</param>
         /// <returns>The ID of the created contact.</returns>
-        Task<Guid> CreateContactHandlerAsync(ContactEvent contact);
+        Task<Guid> CreateContactHandlerAsync(ContactIntegrationModel contact);
 
         /// <summary>
         /// Updates an existing contact.
         /// </summary>
         /// <param name="contact">The contact event.</param>
-        Task UpdateContactHandlerAsync(ContactEvent contact);
+        Task UpdateContactHandlerAsync(ContactIntegrationModel contact);
 
         /// <summary>
         /// Deletes a contact by ID and area code.
@@ -26,5 +26,5 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services.Interfaces
         /// <param name="id">The ID of the contact.</param>
         /// <param name="areaCode">The area code of the contact.</param>
         Task DeleteContactHandlerAsync(Guid id, string areaCode);
-    }
 }
+    }

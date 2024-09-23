@@ -15,7 +15,7 @@ namespace Postech.GroupEight.ContactIntegration.Core.Entities
         /// <summary>
         /// The creation date and time of the entity.
         /// </summary>
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         /// <summary>
         /// The last modification date and time of the entity.

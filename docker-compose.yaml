@@ -1,5 +1,4 @@
 services:
-  # MongoDB Database
   mongodb:
     image: mongo
     container_name: mongodb
@@ -8,16 +7,20 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=fiap
       - MONGO_INITDB_ROOT_PASSWORD=fiap123456
+    networks:
+      - app-network
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "15672:15672"  # Porta de gerenciamento do RabbitMQ
-      - "5672:5672"    # Porta de comunicação do RabbitMQ
+      - "15672:15672"
+      - "5672:5672"
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=Admin*123
+    networks:
+      - app-network
 
   worker:
     build:
@@ -26,16 +29,18 @@ services:
     container_name: contact_integration_worker
     restart: always
     ports:
-      - "5005:8080"  # Porta do worker
-      - "5678:5678"  # Porta do Prometheus 
+      - "5005:8080"
+      - "5678:5678"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       MONGO_CONNECTION_STRING: "mongodb://fiap:fiap123456@mongodb:27017/admin"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_PORT: "5672" 
+      RABBITMQ_PORT: "5672"
     depends_on:
       - mongodb
       - rabbitmq
+    networks:
+      - app-network
 
   prometheus:
     image: prom/prometheus:latest
@@ -46,6 +51,8 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - app-network
 
   grafana:
     image: grafana/grafana:latest
@@ -54,11 +61,9 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - app-network
 
 networks:
   app-network:
-    driver: bridge
-
-volumes:
-  prometheus_data: {}
-  grafana_data: {}
+    external: true

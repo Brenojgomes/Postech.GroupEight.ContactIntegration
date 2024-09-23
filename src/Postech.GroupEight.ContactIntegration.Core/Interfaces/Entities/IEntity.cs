@@ -13,7 +13,7 @@
         /// <summary>
         /// Creation date and time of the entity.
         /// </summary>
-        DateTime CreatedAt { get; }
+        DateTime? CreatedAt { get; }
 
         /// <summary>
         /// Last modification date and time of the entity.

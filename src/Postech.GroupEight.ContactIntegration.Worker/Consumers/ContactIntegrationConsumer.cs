@@ -11,7 +11,7 @@ namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
     /// <summary>
     /// Represents a consumer for processing contact integration events.
     /// </summary>
-    public class ContactIntegrationConsumer : IConsumer<ContactEvent>
+    public class ContactIntegrationConsumer : IConsumer<ContactIntegrationModel>
     {
         private readonly ILogger<ContactIntegrationConsumer> _logger;
         private readonly IContactService _contactService;
@@ -34,7 +34,7 @@ namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
         /// Consumes the contact integration event.
         /// </summary>
         /// <param name="context">The consume context.</param>
-        public async Task Consume(ConsumeContext<ContactEvent> context)
+        public async Task Consume(ConsumeContext<ContactIntegrationModel> context)
         {
             try
             {

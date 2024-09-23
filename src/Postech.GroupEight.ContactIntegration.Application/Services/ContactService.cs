@@ -25,7 +25,7 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// </summary>
         /// <param name="contact">The contact event.</param>
         /// <returns>The ID of the created contact.</returns>
-        public async Task<Guid> CreateContactHandlerAsync(ContactEvent contact)
+        public async Task<Guid> CreateContactHandlerAsync(ContactIntegrationModel contact)
         {
             if (contact is null) throw new ArgumentNullException(nameof(contact));
 
@@ -36,9 +36,9 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
                 contactEntity = new ContactEntity
                 {
                     Id = contact.Id,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = contact.CreatedAt,
                     AreaCode = contact.AreaCode,
-                    Number = contact.Number,
+                    Number = contact.PhoneNumber,
                     FirstName = contact.FirstName,
                     LastName = contact.LastName,
                     Email = contact.Email,
@@ -60,7 +60,7 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// Updates an existing contact.
         /// </summary>
         /// <param name="contact">The contact event.</param>
-        public async Task UpdateContactHandlerAsync(ContactEvent contact)
+        public async Task UpdateContactHandlerAsync(ContactIntegrationModel contact)
         {
             if (contact is null) throw new ArgumentNullException(nameof(contact));
 
@@ -70,12 +70,12 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
                 throw new ArgumentNullException(nameof(contactEntity));
 
             contactEntity.AreaCode = contact.AreaCode;
-            contactEntity.Number = contact.Number;
+            contactEntity.Number = contact.PhoneNumber;
             contactEntity.FirstName = contact.FirstName;
             contactEntity.LastName = contact.LastName;
             contactEntity.Email = contact.Email;
             contactEntity.Active = contact.Active;
-            contactEntity.ModifiedAt = DateTime.UtcNow;
+            contactEntity.ModifiedAt = contact.ModifiedAt;
 
             await _contactRepository.UpdateAsync(contactEntity);
             _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} updated successfully");

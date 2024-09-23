@@ -5,22 +5,12 @@ namespace Postech.GroupEight.TechChallenge.ContactManagement.Events
     /// <summary>
     /// Represents a contact.
     /// </summary>
-    public class ContactEvent
+    public class ContactIntegrationModel
     {
         /// <summary>
         /// ID of the contact.
         /// </summary>
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Area code of the contact.
-        /// </summary>
-        public string AreaCode { get; set; }
-
-        /// <summary>
-        /// Number of the contact.
-        /// </summary>
-        public string Number { get; set; }
 
         /// <summary>
         /// First name of the contact.
@@ -36,6 +26,26 @@ namespace Postech.GroupEight.TechChallenge.ContactManagement.Events
         /// Email of the contact.
         /// </summary>
         public string Email { get; set; }
+
+        /// <summary>
+        /// Area code of the contact.
+        /// </summary>
+        public string AreaCode { get; set; }
+
+        /// <summary>
+        /// Number of the contact.
+        /// </summary>
+        public string PhoneNumber { get; set; }
+
+        /// <summary>
+        /// Contact creation date.
+        /// </summary>
+        public DateTime? CreatedAt { get; set; }
+
+        /// <summary>
+        /// Contact modified date.
+        /// </summary>
+        public DateTime? ModifiedAt { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the contact event is active.

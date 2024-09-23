@@ -25,12 +25,12 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
         public async Task Should_Create_Contact_When_ContactEvent_Is_Received()
         {
             // Arrange
-            var contactEvent = new ContactEvent
+            var contactEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 EventType = EventTypeEnum.Create,
                 AreaCode = "31",
-                Number = "45678907",
+                PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
                 Email = "teste@teste.com",
@@ -68,12 +68,12 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
             };
             await _contactCollection.InsertOneAsync(initialContact);
 
-            var updateEvent = new ContactEvent
+            var updateEvent = new ContactIntegrationModel
             {
                 Id = contactId,
                 EventType = EventTypeEnum.Update,
                 AreaCode = "31",
-                Number = "45678907",
+                PhoneNumber = "45678907",
                 FirstName = "Bruno",
                 LastName = "Silva",
                 Email = "updated@teste.com",
@@ -111,12 +111,12 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
             };
             await _contactCollection.InsertOneAsync(initialContact);
 
-            var deleteEvent = new ContactEvent
+            var deleteEvent = new ContactIntegrationModel
             {
                 Id = contactId,
                 EventType = EventTypeEnum.Delete,
                 AreaCode = "31",
-                Number = "45678907",
+                PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
                 Email = "teste@teste.com",
@@ -138,12 +138,12 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
         public async Task Should_Not_Create_Contact_When_ContactEvent_Has_Invalid_Data()
         {
             // Arrange
-            var invalidContactEvent = new ContactEvent
+            var invalidContactEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 EventType = EventTypeEnum.Create,
                 AreaCode = "",
-                Number = "45678907",
+                PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
                 Email = "teste@teste.com", 
@@ -164,12 +164,12 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
         public async Task Should_Not_Update_Contact_When_ContactEvent_Has_Invalid_Id()
         {
             // Arrange
-            var invalidUpdateEvent = new ContactEvent
+            var invalidUpdateEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 EventType = EventTypeEnum.Update,
                 AreaCode = "31",
-                Number = "45678907",
+                PhoneNumber = "45678907",
                 FirstName = "Bruno",
                 LastName = "Silva",
                 Email = "updated@teste.com",
@@ -190,12 +190,12 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
         public async Task Should_Not_Delete_Contact_When_ContactEvent_Has_Invalid_Id()
         {
             // Arrange
-            var invalidDeleteEvent = new ContactEvent
+            var invalidDeleteEvent = new ContactIntegrationModel
             {
                 Id = Guid.NewGuid(),
                 EventType = EventTypeEnum.Delete,
                 AreaCode = "31",
-                Number = "45678907",
+                PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
                 Email = "teste@teste.com",
