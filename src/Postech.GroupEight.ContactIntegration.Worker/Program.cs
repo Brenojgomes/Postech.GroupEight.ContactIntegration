@@ -10,6 +10,7 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.AddInfrastructure();
+        services.AddScoped<DeleteIntegrationConsumer>();
         services.AddScoped<ContactIntegrationConsumer>();
 
         // Configuração do MassTransit com RabbitMQ
@@ -17,6 +18,7 @@ var host = Host.CreateDefaultBuilder(args)
         {
             var configuration = context.Configuration;
             x.AddConsumer<ContactIntegrationConsumer>();
+            x.AddConsumer<DeleteIntegrationConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -35,6 +37,7 @@ var host = Host.CreateDefaultBuilder(args)
                 cfg.ReceiveEndpoint("contact.integration", e =>
                 {
                     e.ConfigureConsumer<ContactIntegrationConsumer>(context);
+                    e.ConfigureConsumer<DeleteIntegrationConsumer>(context);
                 });
 
                 cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));

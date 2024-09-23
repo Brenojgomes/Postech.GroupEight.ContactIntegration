@@ -201,30 +201,18 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             var loggerMock = new Mock<ILogger<ContactService>>();
 
             var contactId = Guid.NewGuid();
-            var areaCode = "123";
 
-            var existingContact = new ContactEntity
-            {
-                Id = contactId,
-                AreaCode = areaCode,
-                Number = "4567890",
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "john.doe@example.com",
-                Active = true
-            };
-
-            contactRepositoryMock
-                .Setup(repo => repo.GetAsync(contactId, areaCode))
-                .ReturnsAsync(existingContact);
+            //contactRepositoryMock
+            //    .Setup(repo => repo.GetAsync(contactId, areaCode))
+            //    .ReturnsAsync(existingContact);
 
             var contactService = new ContactService(contactRepositoryMock.Object, loggerMock.Object);
 
             // Act
-            await contactService.DeleteContactHandlerAsync(contactId, areaCode);
+            await contactService.DeleteContactHandlerAsync(contactId);
 
             // Assert
-            contactRepositoryMock.Verify(repo => repo.DeleteAsync(contactId, areaCode), Times.Once);
+            contactRepositoryMock.Verify(repo => repo.DeleteAsync(contactId), Times.Once);
             loggerMock.Verify(
                 x => x.Log(
                     LogLevel.Information,
@@ -233,26 +221,6 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                     null,
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                 Times.Once);
-        }
-
-        [Fact]
-        public async Task DeleteContactHandlerAsync_ShouldThrowArgumentNullException_WhenContactDoesNotExist()
-        {
-            // Arrange
-            var contactRepositoryMock = new Mock<IContactRepository>();
-            var loggerMock = new Mock<ILogger<ContactService>>();
-
-            var contactId = Guid.NewGuid();
-            var areaCode = "123";
-
-            contactRepositoryMock
-                .Setup(repo => repo.GetAsync(contactId, areaCode))
-                .ReturnsAsync((ContactEntity)null);
-
-            var contactService = new ContactService(contactRepositoryMock.Object, loggerMock.Object);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => contactService.DeleteContactHandlerAsync(contactId, areaCode));
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories
         /// <param name="id">The ID of the contact to delete.</param>
         /// <param name="areaCode">The area code of the contact to delete.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task DeleteAsync(Guid id, string areaCode);
+        Task DeleteAsync(Guid id);
 
         /// <summary>
         /// Retrieves a contact asynchronously.

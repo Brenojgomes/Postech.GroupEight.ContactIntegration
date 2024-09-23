@@ -31,6 +31,19 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         }
 
         /// <summary>
+        /// Retrieves all collections of contacts.
+        /// </summary>
+        /// <returns>The list of contact collections.</returns>
+        private IEnumerable<IMongoCollection<ContactEntity>> GetAllCollections()
+        {
+            var collectionNames = _database.ListCollectionNames().ToList();
+            foreach (var collectionName in collectionNames)
+            {
+                yield return _database.GetCollection<ContactEntity>(collectionName);
+            }
+        }
+
+        /// <summary>
         /// Retrieves a contact by its ID and area code.
         /// </summary>
         /// <param name="id">The ID of the contact.</param>
@@ -63,14 +76,24 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         }
 
         /// <summary>
-        /// Deletes a contact by its ID and area code.
+        /// Deletes a contact by its ID.
         /// </summary>
-        /// <param name="Id">The ID of the contact.</param>
-        /// <param name="areaCode">The area code of the contact.</param>
-        public async Task DeleteAsync(Guid Id, string areaCode)
+        /// <param name="id">The ID of the contact.</param>
+        public async Task DeleteAsync(Guid id)
         {
-            var collection = GetCollectionByAreaCode(areaCode);
-            await collection.UpdateOneAsync(c => c.Id == Id, Builders<ContactEntity>.Update.Set(c => c.Active, false));
+            var collections = GetAllCollections();
+            foreach (var collection in collections)
+            {
+                var result = await collection.UpdateOneAsync(
+                    c => c.Id == id,
+                    Builders<ContactEntity>.Update.Set(c => c.Active, false)
+                );
+
+                if (result.ModifiedCount > 0)
+                {
+                    break; // Exit the loop if the contact was found and updated
+                }
+            }
         }
     }
 }

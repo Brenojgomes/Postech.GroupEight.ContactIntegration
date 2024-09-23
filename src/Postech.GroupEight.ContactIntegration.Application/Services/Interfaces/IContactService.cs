@@ -25,6 +25,6 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services.Interfaces
         /// </summary>
         /// <param name="id">The ID of the contact.</param>
         /// <param name="areaCode">The area code of the contact.</param>
-        Task DeleteContactHandlerAsync(Guid id, string areaCode);
+        Task DeleteContactHandlerAsync(Guid id);
 }
     }

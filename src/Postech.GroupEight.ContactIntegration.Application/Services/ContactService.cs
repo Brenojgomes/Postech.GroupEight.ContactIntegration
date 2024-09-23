@@ -86,15 +86,10 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// </summary>
         /// <param name="id">The ID of the contact.</param>
         /// <param name="areaCode">The area code of the contact.</param>
-        public async Task DeleteContactHandlerAsync(Guid id, string areaCode)
+        public async Task DeleteContactHandlerAsync(Guid id)
         {
-            var contactEntity = await _contactRepository.GetAsync(id, areaCode);
-
-            if (contactEntity is null)
-                throw new ArgumentNullException(nameof(contactEntity));
-
-            await _contactRepository.DeleteAsync(id, areaCode);
-            _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} deleted successfully");
+            await _contactRepository.DeleteAsync(id);
+            _logger.Log(LogLevel.Information, $"Contact Id: {id} deleted successfully");
         }
     }
 }
