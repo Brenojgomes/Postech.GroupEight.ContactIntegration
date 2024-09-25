@@ -4,7 +4,7 @@ global:
 scrape_configs:
   - job_name: 'contact-integration-worker'
     static_configs:
-      - targets: ['contact-integration-worker:1234']
+      - targets: ['contact_integration_worker:5678']
 
   - job_name: 'contactfind-api'
     static_configs:
