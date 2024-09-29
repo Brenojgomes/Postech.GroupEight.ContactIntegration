@@ -41,14 +41,14 @@ namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
                     switch (context.Message.EventType)
                     {
                         case EventTypeEnum.Create:
-                            _logger.LogInformation($"Contact created: {context.Message.Id}");
                             CreateEventCounter.Inc();
                             await _contactService.CreateContactHandlerAsync(context.Message);
+                            _logger.LogInformation($"Contact created: {context.Message.Id}");
                             break;
-                        case EventTypeEnum.Update:
-                            _logger.LogInformation($"Contact updated: {context.Message.Id}");
+                        case EventTypeEnum.Update:          
                             UpdateEventCounter.Inc();
                             await _contactService.UpdateContactHandlerAsync(context.Message);
+                            _logger.LogInformation($"Contact updated: {context.Message.Id}");
                             break;
                         default:
                             _logger.LogInformation($"Invalid EventType: {context.Message.EventType}");

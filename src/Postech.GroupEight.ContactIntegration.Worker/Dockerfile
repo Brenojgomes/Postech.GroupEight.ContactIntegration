@@ -1,9 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 5678 # Porta do Prometheus 
+EXPOSE 5678
 
-ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Docker
 
 USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -22,4 +21,4 @@ RUN dotnet publish "Postech.GroupEight.ContactIntegration.Worker.csproj" -c $con
 FROM build AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Postech.GroupEight.ContactIntegration.Worker.dll"]
+ENTRYPOINT ["dotnet", "Postech.GroupEight.ContactIntegration.Worker.dll", "--environment=Docker"]

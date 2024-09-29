@@ -6,17 +6,21 @@ using Prometheus;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
-var host = Host.CreateDefaultBuilder(args)
+IHost host = Host.CreateDefaultBuilder(args)
+    .ConfigureAppConfiguration((context, config) =>
+    {
+        IHostEnvironment env = context.HostingEnvironment;
+        config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true);
+    })
     .ConfigureServices((context, services) =>
     {
         services.AddInfrastructure();
         services.AddScoped<DeleteIntegrationConsumer>();
         services.AddScoped<ContactIntegrationConsumer>();
 
-        // Configuração do MassTransit com RabbitMQ
         services.AddMassTransit(x =>
         {
-            var configuration = context.Configuration;
+            IConfiguration configuration = context.Configuration;
             x.AddConsumer<ContactIntegrationConsumer>();
             x.AddConsumer<DeleteIntegrationConsumer>();
 
@@ -46,8 +50,7 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddHostedService<Worker>();
 
-        // Iniciar servidor de métricas do Prometheus
-        var metricsServer = new KestrelMetricServer(port: 5678); // Porta onde o Prometheus vai coletar as métricas
+        KestrelMetricServer metricsServer = new(port: 5678);
         metricsServer.Start();
     })
     .ConfigureLogging(logging =>

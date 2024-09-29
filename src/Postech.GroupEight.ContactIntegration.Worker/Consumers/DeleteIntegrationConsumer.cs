@@ -32,10 +32,10 @@ namespace Postech.GroupEight.ContactIntegration.Worker.Consumers
             try
             {
                 await _circuitBreakerPolicy.ExecuteAsync(async () =>
-                {
-                    _logger.LogInformation($"Contact deleted: {context.Message.Id}");
+                {              
                     DeleteEventCounter.Inc();
                     await _contactService.DeleteContactHandlerAsync(context.Message.Id);
+                    _logger.LogInformation($"Contact deleted: {context.Message.Id}");
                 });
             }
             catch (Exception ex)
