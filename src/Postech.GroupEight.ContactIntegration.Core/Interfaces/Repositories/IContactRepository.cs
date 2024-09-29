@@ -36,5 +36,12 @@ namespace Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories
         /// <param name="areaCode">The area code of the contact to retrieve.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task<ContactEntity> GetAsync(Guid id, string areaCode);
+
+        /// <summary>
+        /// Retrieves a contact asynchronously.
+        /// </summary>
+        /// <param name="id">The ID of the contact to retrieve.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task<ContactEntity?> GetAsync(Guid id);
     }
 }

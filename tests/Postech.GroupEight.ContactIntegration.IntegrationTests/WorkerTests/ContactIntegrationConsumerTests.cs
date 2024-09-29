@@ -6,7 +6,6 @@ using Postech.GroupEight.ContactIntegration.Core.Enumerators;
 using Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.Base;
 using Postech.GroupEight.ContactIntegration.IntegrationTests.Fixtures;
 
-
 namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
 {
     [Collection("Integration Tests")]
@@ -127,8 +126,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
 
             // Assert
             var deletedContact = await _contactCollection.Find(c => c.Id == deleteEvent.Id).FirstOrDefaultAsync();
-            Assert.NotNull(deletedContact);
-            Assert.False(deletedContact.Active);
+            Assert.Null(deletedContact);
         }
 
         [Fact]

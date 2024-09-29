@@ -21,10 +21,8 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// <returns>The ID of the created contact.</returns>
         public async Task<Guid> CreateContactHandlerAsync(ContactIntegrationModel contact)
         {
-            if (contact is null) throw new ArgumentNullException(nameof(contact));
-
-            var contactEntity = await _contactRepository.GetAsync(contact.Id, contact.AreaCode);
-
+            ArgumentNullException.ThrowIfNull(contact);
+            ContactEntity contactEntity = await _contactRepository.GetAsync(contact.Id, contact.AreaCode);
             if (contactEntity is null)
             {
                 contactEntity = new ContactEntity
@@ -38,7 +36,6 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
                     Email = contact.Email,
                     Active = true,
                 };
-
                 await _contactRepository.CreateAsync(contactEntity);
                 _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} created successfully");
             }
@@ -46,7 +43,6 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
             {
                 _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} already exists");
             }
-
             return contactEntity.Id;
         }
 
@@ -56,21 +52,24 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// <param name="contact">The contact event.</param>
         public async Task UpdateContactHandlerAsync(ContactIntegrationModel contact)
         {
-            if (contact is null) throw new ArgumentNullException(nameof(contact));
-
-            var contactEntity = await _contactRepository.GetAsync(contact.Id, contact.AreaCode);
-
-            if (contactEntity is null)
-                throw new ArgumentNullException(nameof(contactEntity));
-
-            contactEntity.AreaCode = contact.AreaCode;
+            ArgumentNullException.ThrowIfNull(contact);
+            ContactEntity? contactEntity = await _contactRepository.GetAsync(contact.Id);
+            ArgumentNullException.ThrowIfNull(contactEntity);          
             contactEntity.Number = contact.PhoneNumber;
             contactEntity.FirstName = contact.FirstName;
             contactEntity.LastName = contact.LastName;
             contactEntity.Email = contact.Email;
             contactEntity.ModifiedAt = contact.ModifiedAt;
-
-            await _contactRepository.UpdateAsync(contactEntity);
+            if (contactEntity.AreaCode.Equals(contact.AreaCode))
+            {
+                await _contactRepository.UpdateAsync(contactEntity);
+            }
+            else 
+            {
+                contactEntity.AreaCode = contact.AreaCode;
+                await _contactRepository.DeleteAsync(contactEntity.Id);
+                await _contactRepository.CreateAsync(contactEntity);
+            }     
             _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} updated successfully");
         }
 

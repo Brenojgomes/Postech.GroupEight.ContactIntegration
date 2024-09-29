@@ -129,7 +129,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             };
 
             contactRepositoryMock
-                .Setup(repo => repo.GetAsync(contactEvent.Id, contactEvent.AreaCode))
+                .Setup(repo => repo.GetAsync(contactEvent.Id))
                 .ReturnsAsync(existingContact);
 
             var contactService = new ContactService(contactRepositoryMock.Object, loggerMock.Object);
@@ -180,8 +180,8 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
             };
 
             contactRepositoryMock
-                .Setup(repo => repo.GetAsync(contactEvent.Id, contactEvent.AreaCode))
-                .ReturnsAsync((ContactEntity)null);
+                .Setup(repo => repo.GetAsync(contactEvent.Id))
+                .ReturnsAsync(() => null);
 
             var contactService = new ContactService(contactRepositoryMock.Object, loggerMock.Object);
 
