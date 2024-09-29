@@ -7,17 +7,12 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
     /// <summary>
     /// Repository class for managing contacts.
     /// </summary>
-    public class ContactRepository : IContactRepository
+    public class ContactRepository(IMongoClient mongoClient) : IContactRepository
     {
         /// <summary>
         /// The MongoDB client.
         /// </summary>
-        private readonly IMongoDatabase _database;
-
-        public ContactRepository(IMongoClient mongoClient)
-        {
-            _database = mongoClient.GetDatabase("contacts");
-        }
+        private readonly IMongoDatabase _database = mongoClient.GetDatabase("contacts");
 
         /// <summary>
         /// Retrieves a collection of contacts based on the provided area code.

@@ -9,16 +9,10 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
     /// <summary>
     /// Service class for managing contacts.
     /// </summary>
-    public class ContactService : IContactService
+    public class ContactService(IContactRepository contactRepository, ILogger<ContactService> logger) : IContactService
     {
-        private readonly IContactRepository _contactRepository;
-        private readonly ILogger<ContactService> _logger;
-
-        public ContactService(IContactRepository contactRepository, ILogger<ContactService> logger)
-        {
-            _contactRepository = contactRepository;
-            _logger = logger;
-        }
+        private readonly IContactRepository _contactRepository = contactRepository;
+        private readonly ILogger<ContactService> _logger = logger;
 
         /// <summary>
         /// Creates a new contact.
@@ -42,7 +36,7 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
                     FirstName = contact.FirstName,
                     LastName = contact.LastName,
                     Email = contact.Email,
-                    Active = contact.Active,
+                    Active = true,
                 };
 
                 await _contactRepository.CreateAsync(contactEntity);
@@ -74,7 +68,6 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
             contactEntity.FirstName = contact.FirstName;
             contactEntity.LastName = contact.LastName;
             contactEntity.Email = contact.Email;
-            contactEntity.Active = contact.Active;
             contactEntity.ModifiedAt = contact.ModifiedAt;
 
             await _contactRepository.UpdateAsync(contactEntity);
