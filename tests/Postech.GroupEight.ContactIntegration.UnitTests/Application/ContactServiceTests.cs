@@ -23,8 +23,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                 PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
-                Email = "john.doe@example.com",
-                Active = true
+                Email = "john.doe@example.com"
             };
 
             contactRepositoryMock
@@ -64,8 +63,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                 PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
-                Email = "john.doe@example.com",
-                Active = true
+                Email = "john.doe@example.com"
             };
 
             var existingContact = new ContactEntity
@@ -76,7 +74,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                 FirstName = contactEvent.FirstName,
                 LastName = contactEvent.LastName,
                 Email = contactEvent.Email,
-                Active = contactEvent.Active
+                Active = true
             };
 
             contactRepositoryMock
@@ -116,8 +114,7 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                 PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
-                Email = "john.doe@example.com",
-                Active = true
+                Email = "john.doe@example.com"
             };
 
             var existingContact = new ContactEntity
@@ -128,11 +125,11 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                 FirstName = contactEvent.FirstName,
                 LastName = contactEvent.LastName,
                 Email = contactEvent.Email,
-                Active = contactEvent.Active
+                Active = true
             };
 
             contactRepositoryMock
-                .Setup(repo => repo.GetAsync(contactEvent.Id, contactEvent.AreaCode))
+                .Setup(repo => repo.GetAsync(contactEvent.Id))
                 .ReturnsAsync(existingContact);
 
             var contactService = new ContactService(contactRepositoryMock.Object, loggerMock.Object);
@@ -179,13 +176,12 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests.Application
                 PhoneNumber = "4567890",
                 FirstName = "John",
                 LastName = "Doe",
-                Email = "john.doe@example.com",
-                Active = true
+                Email = "john.doe@example.com"
             };
 
             contactRepositoryMock
-                .Setup(repo => repo.GetAsync(contactEvent.Id, contactEvent.AreaCode))
-                .ReturnsAsync((ContactEntity)null);
+                .Setup(repo => repo.GetAsync(contactEvent.Id))
+                .ReturnsAsync(() => null);
 
             var contactService = new ContactService(contactRepositoryMock.Object, loggerMock.Object);
 

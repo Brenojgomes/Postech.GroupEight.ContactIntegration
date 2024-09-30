@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>CS8604</NoWarn>
     <UserSecretsId>dotnet-Postech.GroupEight.ContactIntegration.Worker-e02b5d67-8c08-491c-aa0f-a15566125e1f</UserSecretsId>
   </PropertyGroup>
 

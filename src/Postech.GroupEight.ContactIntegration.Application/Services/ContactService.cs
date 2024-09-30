@@ -9,16 +9,10 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
     /// <summary>
     /// Service class for managing contacts.
     /// </summary>
-    public class ContactService : IContactService
+    public class ContactService(IContactRepository contactRepository, ILogger<ContactService> logger) : IContactService
     {
-        private readonly IContactRepository _contactRepository;
-        private readonly ILogger<ContactService> _logger;
-
-        public ContactService(IContactRepository contactRepository, ILogger<ContactService> logger)
-        {
-            _contactRepository = contactRepository;
-            _logger = logger;
-        }
+        private readonly IContactRepository _contactRepository = contactRepository;
+        private readonly ILogger<ContactService> _logger = logger;
 
         /// <summary>
         /// Creates a new contact.
@@ -27,10 +21,8 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// <returns>The ID of the created contact.</returns>
         public async Task<Guid> CreateContactHandlerAsync(ContactIntegrationModel contact)
         {
-            if (contact is null) throw new ArgumentNullException(nameof(contact));
-
-            var contactEntity = await _contactRepository.GetAsync(contact.Id, contact.AreaCode);
-
+            ArgumentNullException.ThrowIfNull(contact);
+            ContactEntity contactEntity = await _contactRepository.GetAsync(contact.Id, contact.AreaCode);
             if (contactEntity is null)
             {
                 contactEntity = new ContactEntity
@@ -42,9 +34,8 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
                     FirstName = contact.FirstName,
                     LastName = contact.LastName,
                     Email = contact.Email,
-                    Active = contact.Active,
+                    Active = true,
                 };
-
                 await _contactRepository.CreateAsync(contactEntity);
                 _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} created successfully");
             }
@@ -52,7 +43,6 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
             {
                 _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} already exists");
             }
-
             return contactEntity.Id;
         }
 
@@ -62,22 +52,24 @@ namespace Postech.GroupEight.ContactIntegration.Application.Services
         /// <param name="contact">The contact event.</param>
         public async Task UpdateContactHandlerAsync(ContactIntegrationModel contact)
         {
-            if (contact is null) throw new ArgumentNullException(nameof(contact));
-
-            var contactEntity = await _contactRepository.GetAsync(contact.Id, contact.AreaCode);
-
-            if (contactEntity is null)
-                throw new ArgumentNullException(nameof(contactEntity));
-
-            contactEntity.AreaCode = contact.AreaCode;
+            ArgumentNullException.ThrowIfNull(contact);
+            ContactEntity? contactEntity = await _contactRepository.GetAsync(contact.Id);
+            ArgumentNullException.ThrowIfNull(contactEntity);          
             contactEntity.Number = contact.PhoneNumber;
             contactEntity.FirstName = contact.FirstName;
             contactEntity.LastName = contact.LastName;
             contactEntity.Email = contact.Email;
-            contactEntity.Active = contact.Active;
             contactEntity.ModifiedAt = contact.ModifiedAt;
-
-            await _contactRepository.UpdateAsync(contactEntity);
+            if (contactEntity.AreaCode.Equals(contact.AreaCode))
+            {
+                await _contactRepository.UpdateAsync(contactEntity);
+            }
+            else 
+            {
+                contactEntity.AreaCode = contact.AreaCode;
+                await _contactRepository.DeleteAsync(contactEntity.Id);
+                await _contactRepository.CreateAsync(contactEntity);
+            }     
             _logger.Log(LogLevel.Information, $"Contact Id: {contactEntity.Id} updated successfully");
         }
 

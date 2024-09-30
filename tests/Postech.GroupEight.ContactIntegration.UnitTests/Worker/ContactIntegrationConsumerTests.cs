@@ -29,7 +29,6 @@ namespace Postech.GroupEight.ContactIntegration.UnitTests
                 FirstName = faker.Random.String(),
                 LastName = faker.Random.String(),
                 Email = faker.Internet.Email(),
-                Active = faker.Random.Bool(),
                 EventType = faker.PickRandom<EventTypeEnum>()
             };
             contextMock.Setup(x => x.Message).Returns(message);

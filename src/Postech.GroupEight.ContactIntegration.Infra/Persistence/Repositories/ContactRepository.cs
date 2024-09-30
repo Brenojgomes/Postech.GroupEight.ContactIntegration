@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System.Diagnostics.CodeAnalysis;
+using MongoDB.Driver;
 using Postech.GroupEight.ContactIntegration.Core.Entities;
 using Postech.GroupEight.ContactIntegration.Core.Interfaces.Repositories;
 
@@ -7,17 +8,13 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
     /// <summary>
     /// Repository class for managing contacts.
     /// </summary>
-    public class ContactRepository : IContactRepository
+    [ExcludeFromCodeCoverage]
+    public class ContactRepository(IMongoClient mongoClient) : IContactRepository
     {
         /// <summary>
         /// The MongoDB client.
         /// </summary>
-        private readonly IMongoDatabase _database;
-
-        public ContactRepository(IMongoClient mongoClient)
-        {
-            _database = mongoClient.GetDatabase("contacts");
-        }
+        private readonly IMongoDatabase _database = mongoClient.GetDatabase("contacts");
 
         /// <summary>
         /// Retrieves a collection of contacts based on the provided area code.
@@ -36,7 +33,7 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         /// <returns>The list of contact collections.</returns>
         private IEnumerable<IMongoCollection<ContactEntity>> GetAllCollections()
         {
-            var collectionNames = _database.ListCollectionNames().ToList();
+            List<string> collectionNames = _database.ListCollectionNames().ToList();
             foreach (var collectionName in collectionNames)
             {
                 yield return _database.GetCollection<ContactEntity>(collectionName);
@@ -51,8 +48,27 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         /// <returns>The contact entity.</returns>
         public async Task<ContactEntity> GetAsync(Guid id, string areaCode)
         {
-            var collection = GetCollectionByAreaCode(areaCode);
+            IMongoCollection<ContactEntity> collection = GetCollectionByAreaCode(areaCode);
             return await collection.Find(c => c.Id == id).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves a contact by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the contact.</param>
+        /// <returns>The contact entity.</returns>
+        public async Task<ContactEntity?> GetAsync(Guid id)
+        {
+            IEnumerable<IMongoCollection<ContactEntity>> collections = GetAllCollections();
+            foreach (IMongoCollection<ContactEntity> collection in collections)
+            {
+                ContactEntity contactEntity = await collection.Find(c => c.Id == id).FirstOrDefaultAsync();
+                if (contactEntity is not null)
+                {
+                    return contactEntity;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -61,7 +77,7 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         /// <param name="contact">The contact entity to create.</param>
         public async Task CreateAsync(ContactEntity contact)
         {
-            var collection = GetCollectionByAreaCode(contact.AreaCode);
+            IMongoCollection<ContactEntity> collection = GetCollectionByAreaCode(contact.AreaCode);
             await collection.InsertOneAsync(contact);
         }
 
@@ -71,7 +87,7 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         /// <param name="contact">The contact entity to update.</param>
         public async Task UpdateAsync(ContactEntity contact)
         {
-            var collection = GetCollectionByAreaCode(contact.AreaCode);
+            IMongoCollection<ContactEntity> collection = GetCollectionByAreaCode(contact.AreaCode);
             await collection.ReplaceOneAsync(c => c.Id == contact.Id, contact);
         }
 
@@ -81,17 +97,13 @@ namespace Postech.GroupEight.ContactIntegration.Infra.Persistence.Repositories
         /// <param name="id">The ID of the contact.</param>
         public async Task DeleteAsync(Guid id)
         {
-            var collections = GetAllCollections();
-            foreach (var collection in collections)
+            IEnumerable<IMongoCollection<ContactEntity>> collections = GetAllCollections();
+            foreach (IMongoCollection<ContactEntity> collection in collections)
             {
-                var result = await collection.UpdateOneAsync(
-                    c => c.Id == id,
-                    Builders<ContactEntity>.Update.Set(c => c.Active, false)
-                );
-
-                if (result.ModifiedCount > 0)
+                DeleteResult deleteResult = await collection.DeleteOneAsync(contact => contact.Id == id);
+                if (deleteResult.DeletedCount > 0)
                 {
-                    break; // Exit the loop if the contact was found and updated
+                    break;
                 }
             }
         }

@@ -6,7 +6,6 @@ using Postech.GroupEight.ContactIntegration.Core.Enumerators;
 using Postech.GroupEight.ContactIntegration.IntegrationTests.Configurations.Base;
 using Postech.GroupEight.ContactIntegration.IntegrationTests.Fixtures;
 
-
 namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
 {
     [Collection("Integration Tests")]
@@ -33,8 +32,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
                 PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
-                Email = "teste@teste.com",
-                Active = true
+                Email = "teste@teste.com"
             };
 
             // Act
@@ -76,8 +74,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
                 PhoneNumber = "45678907",
                 FirstName = "Bruno",
                 LastName = "Silva",
-                Email = "updated@teste.com",
-                Active = true
+                Email = "updated@teste.com"
             };
 
             // Act
@@ -119,8 +116,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
                 PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
-                Email = "teste@teste.com",
-                Active = false
+                Email = "teste@teste.com"
             };
 
             // Act
@@ -130,8 +126,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
 
             // Assert
             var deletedContact = await _contactCollection.Find(c => c.Id == deleteEvent.Id).FirstOrDefaultAsync();
-            Assert.NotNull(deletedContact);
-            Assert.False(deletedContact.Active);
+            Assert.Null(deletedContact);
         }
 
         [Fact]
@@ -146,8 +141,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
                 PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
-                Email = "teste@teste.com", 
-                Active = true
+                Email = "teste@teste.com"
             };
 
             // Act
@@ -172,8 +166,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
                 PhoneNumber = "45678907",
                 FirstName = "Bruno",
                 LastName = "Silva",
-                Email = "updated@teste.com",
-                Active = true
+                Email = "updated@teste.com"
             };
 
             // Act
@@ -198,8 +191,7 @@ namespace Postech.GroupEight.ContactIntegration.IntegrationTests.WorkerTests
                 PhoneNumber = "45678907",
                 FirstName = "Breno",
                 LastName = "Gomes",
-                Email = "teste@teste.com",
-                Active = false
+                Email = "teste@teste.com"
             };
 
             // Act
