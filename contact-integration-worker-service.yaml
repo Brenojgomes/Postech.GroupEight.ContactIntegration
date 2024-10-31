@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: contact-integration-worker-service
+spec:
+  selector:
+    app: contact-integration-worker
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80 
+      targetPort: 5678
+      nodePort: 32695

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: contact-integration-worker-pod
+  labels:
+    app: ccontact-integration-worker
+spec:
+  containers:
+  - name: contact-integration-worker
+    image: brenojgomes/contactintegration_worker:1
+    ports:
+    - containerPort: 5266
