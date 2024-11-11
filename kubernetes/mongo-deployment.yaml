@@ -4,8 +4,8 @@ metadata:
   name: mongodb-secret
 type: Opaque
 data:
-  MONGO_INITDB_ROOT_USERNAME: ZmlhcA==  # 'fiap' codificado em Base64
-  MONGO_INITDB_ROOT_PASSWORD: ZmlhcDEyMzQ1Ng==  # 'fiap123456' codificado em Base64
+  MONGO_INITDB_ROOT_USERNAME: ZmlhcA==
+  MONGO_INITDB_ROOT_PASSWORD: ZmlhcDEyMzQ1Ng==
 
 ---
 
@@ -21,7 +21,7 @@ spec:
   storageClassName: local-storage
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /data/mongodb # Caminho no host (útil para clusters locais); em ambientes de nuvem, altere conforme necessário
+    path: /data/mongodb
 
 ---
 
