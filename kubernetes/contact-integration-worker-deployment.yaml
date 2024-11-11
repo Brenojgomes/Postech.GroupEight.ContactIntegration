@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: container-contact-integration-worker
-        image: brenojgomes/contactintegration_worker:2
+        image: brenojgomes/contactintegration_worker:3
         ports:
         - containerPort: 5266
         env:
