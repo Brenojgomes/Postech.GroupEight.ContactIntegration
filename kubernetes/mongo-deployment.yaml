@@ -1,3 +1,46 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-secret
+type: Opaque
+data:
+  MONGO_INITDB_ROOT_USERNAME: ZmlhcA==  # 'fiap' codificado em Base64
+  MONGO_INITDB_ROOT_PASSWORD: ZmlhcDEyMzQ1Ng==  # 'fiap123456' codificado em Base64
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv
+spec:
+  capacity:
+    storage: 16Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /data/mongodb # Caminho no host (útil para clusters locais); em ambientes de nuvem, altere conforme necessário
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  labels:
+    name: postgres-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 16Gi
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,9 +64,41 @@ spec:
         - containerPort: 27017
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
-          value: "fiap"
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_USERNAME
         - name: MONGO_INITDB_ROOT_PASSWORD
-          value: "fiap123456"
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+        volumeMounts:
+        - name: mongodb-storage
+          mountPath: /data/db
+          
+      - name: mongodb-exporter
+        image: bitnami/mongodb-exporter:latest
+        args:
+          - "--mongodb.uri=mongodb://$(MONGO_INITDB_ROOT_USERNAME):$(MONGO_INITDB_ROOT_PASSWORD)@localhost:27017"
+        ports:
+        - containerPort: 9216
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+
+      volumes:
+      - name: mongodb-storage
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
 
 ---
 
@@ -36,7 +111,11 @@ spec:
     app: mongodb
   type: NodePort
   ports:
-    - protocol: TCP
-      port: 80       
+    - name: mongodb
+      port: 27017       
       targetPort: 27017 
       nodePort: 31400
+    - name: mongodb-exporter
+      port: 9216       
+      targetPort: 9216 
+      nodePort: 31401
