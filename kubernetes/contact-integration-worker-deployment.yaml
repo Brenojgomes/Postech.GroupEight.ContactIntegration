@@ -1,34 +1,59 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: techchallenge-dotnet-worker-secret
+type: Opaque
+data:
+  MONGO_CONNECTION_STRING: bW9uZ29kYjovL2ZpYXA6ZmlhcDEyMzQ1NkBzZXJ2aWNlLW1vbmdvLWRiOjI3MDE3L2FkbWlu # Substitua pela string codificada em base64
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: contact-integration-worker-deployment
+  name: techchallenge-dotnet-contact-integration-worker
   labels:
-    app: contact-integration-worker
+    app: techchallenge-dotnet-contact-integration-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: contact-integration-worker
+      app: techchallenge-dotnet-contact-integration-worker
   template:
     metadata:
       labels:
-        app: contact-integration-worker
+        app: techchallenge-dotnet-contact-integration-worker
     spec:
       containers:
       - name: container-contact-integration-worker
-        image: brenojgomes/contactintegration_worker:3
+        image: brenojgomes/contactintegration_worker:4
         ports:
-        - containerPort: 5266
+        - containerPort: 5678
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Docker"
         - name: MONGO_CONNECTION_STRING
-          value: "mongodb://fiap:fiap123456@mongodb-service:27017/admin"
+          valueFrom:
+            secretKeyRef:
+              name: techchallenge-dotnet-worker-secret
+              key: MONGO_CONNECTION_STRING
         - name: RABBITMQ_HOST
           value: "rabbitmq"
         - name: RABBITMQ_PORT
           value: "5672"
-
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5679
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5679
+          initialDelaySeconds: 20
+          periodSeconds: 60
+          failureThreshold: 3
 
 ---
 apiVersion: v1
@@ -36,11 +61,11 @@ kind: Service
 metadata:
   name: contact-integration-worker-service
   labels:
-    app: contact-integration-worker
+    app: techchallenge-dotnet-contact-integration-worker
 spec:
   selector:
-    app: contact-integration-worker
+    app: techchallenge-dotnet-contact-integration-worker
   type: ClusterIP
   ports:
-    - port: 5678 
+    - port: 5678
       targetPort: 5678
