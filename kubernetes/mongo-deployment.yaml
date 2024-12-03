@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-db-secret
+type: Opaque
+data:
+  MONGO_INITDB_ROOT_USERNAME: ZmlhcA==
+  MONGO_INITDB_ROOT_PASSWORD: ZmlhcDEyMzQ1Ng==
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-db-pv
+  labels:
+    name: mongo-db-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-db-pvc
+  labels:
+    name: mongo-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-db
+  labels:
+    app: mongo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-db
+  template:
+    metadata:
+      labels:
+        app: mongo-db
+      annotations:
+        prometheus.io/scrape: "true" 
+        prometheus.io/path: "/metrics" 
+        prometheus.io/port: "9216" 
+    spec:
+      containers:
+        - name: container-mongo-db
+          image: mongo:latest
+          ports:
+            - name: "db-port"
+              containerPort: 27017
+          livenessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-db-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-db-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-db-storage
+        - name: container-mongo-db-exporter
+          image: bitnami/mongodb-exporter:latest
+          args:
+            - "--mongodb.uri=mongodb://$(MONGO_INITDB_ROOT_USERNAME):$(MONGO_INITDB_ROOT_PASSWORD)@localhost:27017"
+          ports:
+            - name: "exporter-port"
+              containerPort: 9216
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-db-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-db-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+      volumes:
+        - name: mongo-db-storage
+          persistentVolumeClaim: 
+            claimName: mongo-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-mongo-db
+  labels:
+    app: mongo-db
+spec:
+  type: ClusterIP
+  ports:
+    - name: db-port
+      port: 27017
+      targetPort: 27017
+    - name: exporter-port
+      port: 9216
+      targetPort: 9216
+  selector:
+    app: mongo-db

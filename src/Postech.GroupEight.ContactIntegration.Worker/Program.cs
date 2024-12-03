@@ -1,7 +1,11 @@
 using MassTransit;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Hosting;
 using Postech.GroupEight.ContactIntegration.Infra;
 using Postech.GroupEight.ContactIntegration.Worker;
 using Postech.GroupEight.ContactIntegration.Worker.Consumers;
+using Postech.GroupEight.ContactIntegration.Worker.Setup;
 using Prometheus;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -48,11 +52,30 @@ IHost host = Host.CreateDefaultBuilder(args)
             });
         });
 
+        services.AddHealthChecks().AddMongoDbHealthCheck();
+        services.AddHealthChecks().AddRabbitMQHealthCheck();
+
         services.AddHostedService<Worker>();
 
         KestrelMetricServer metricsServer = new(port: 5678);
         metricsServer.Start();
     })
+    .ConfigureWebHostDefaults(webBuilder =>
+     {
+         webBuilder.Configure(app =>
+         {
+             app.UseRouting();
+             app.UseEndpoints(endpoints =>
+             {
+                 endpoints.MapHealthChecks("/health");
+                 endpoints.MapHealthChecks("/ready", new HealthCheckOptions
+                 {
+                     Predicate = healthCheck => healthCheck.Tags.Contains("ready")
+                 });
+             });
+         })
+         .UseUrls("http://0.0.0.0:5679");
+     })
     .ConfigureLogging(logging =>
     {
         logging.ClearProviders();
