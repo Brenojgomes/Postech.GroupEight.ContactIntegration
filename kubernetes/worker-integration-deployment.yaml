@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: techchallenge-dotnet-contactintegration-secret
+type: Opaque
+data:
+  MONGO_CONNECTION_STRING: bW9uZ29kYjovL2ZpYXA6ZmlhcDEyMzQ1NkBzZXJ2aWNlLW1vbmdvLWRiOjI3MDE3L2FkbWlu
+  RABBITMQ_HOST: c2VydmljZS1yYWJiaXRtcQ==
+  RABBITMQ_PORT: NTY3Mg==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techchallenge-dotnet-contactintegration
+  labels:
+    app: techchallenge-dotnet-contactintegration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: techchallenge-dotnet-contactintegration
+  template:
+    metadata:
+      labels:
+        app: techchallenge-dotnet-contactintegration
+      annotations:
+        prometheus.io/scrape: "true" 
+        prometheus.io/path: "/metrics" 
+        prometheus.io/port: "5678" 
+    spec:
+      containers:
+        - name: container-techchallenge-dotnet-contactintegration
+          image: lruizd/techchallenge-dotnet-contactintegration:latest
+          ports:
+            - containerPort: 5678
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5679
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 5679
+            initialDelaySeconds: 20
+            periodSeconds: 60
+            failureThreshold: 3
+          env:
+            - name: MONGO_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-dotnet-contactintegration-secret
+                  key: MONGO_CONNECTION_STRING
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-dotnet-contactintegration-secret
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-dotnet-contactintegration-secret
+                  key: RABBITMQ_PORT
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Docker"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-techchallenge-dotnet-contactintegration
+  labels:
+    app: techchallenge-dotnet-contactintegration
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5678
+      targetPort: 5678
+  selector:
+    app: techchallenge-dotnet-contactintegration
